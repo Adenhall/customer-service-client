@@ -1,41 +1,86 @@
-import React, { ReactNode } from 'react'
-import Link from 'next/link'
-import Head from 'next/head'
+import React, { ReactNode, useState } from "react";
+import {
+  AppBar,
+  createStyles,
+  IconButton,
+  makeStyles,
+  Theme,
+  Toolbar,
+  TextField,
+} from "@material-ui/core";
+import HamburgerIcon from "assets/icons/hamburger.svg";
+import SearchIcon from "assets/icons/search.svg";
+import PlumeLogo from "assets/plume-logo.svg";
 
 type Props = {
-  children?: ReactNode
-  title?: string
-}
+  children?: ReactNode;
+};
 
-const Layout = ({ children, title = 'This is the default title' }: Props) => (
-  <div>
-    <Head>
-      <title>{title}</title>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    </Head>
-    <header>
-      <nav>
-        <Link href="/">
-          <a>Home</a>
-        </Link>{' '}
-        |{' '}
-        <Link href="/about">
-          <a>About</a>
-        </Link>{' '}
-        |{' '}
-        <Link href="/users">
-          <a>Users List</a>
-        </Link>{' '}
-        | <a href="/api/users">Users API</a>
-      </nav>
-    </header>
-    {children}
-    <footer>
-      <hr />
-      <span>I'm here to stay (Footer)</span>
-    </footer>
-  </div>
-)
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    menuButton: {
+      marginRight: theme.spacing(2),
+    },
+    navBar: {
+      background: theme.palette.common.plumeBrown,
+    },
+    navContainer: {
+      justifyContent: "space-between",
+    },
+    inputContainer: {
+      background: "#fff",
+      "& svg": {
+        fill: theme.palette.common.plumeBrown,
+      },
+    },
+    searchField: {
+      background: "#fff",
+      width: "100%",
+    },
+  })
+);
 
-export default Layout
+/**
+ * Layout component that wraps around the whole app
+ */
+
+const Layout = ({ children }: Props) => {
+  const classes = useStyles();
+  const [isSearch, setIsSearch] = useState(false);
+
+  return (
+    <div>
+      <AppBar position="static" className={classes.navBar}>
+        {isSearch ? (
+          <Toolbar className={classes.inputContainer}>
+            <SearchIcon className={classes.menuButton} />
+            <TextField className={classes.searchField} />
+          </Toolbar>
+        ) : (
+          <Toolbar className={classes.navContainer}>
+            <IconButton
+              edge="start"
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="menu"
+            >
+              <HamburgerIcon />
+            </IconButton>
+            <PlumeLogo />
+            <IconButton
+              edge="end"
+              color="inherit"
+              aria-label="search"
+              onClick={() => setIsSearch(!isSearch)}
+            >
+              <SearchIcon />
+            </IconButton>
+          </Toolbar>
+        )}
+      </AppBar>
+      {children}
+    </div>
+  );
+};
+
+export default Layout;
