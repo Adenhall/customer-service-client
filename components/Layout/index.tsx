@@ -7,10 +7,14 @@ import {
   Theme,
   Toolbar,
   TextField,
+  Box,
+  Hidden,
+  Drawer,
 } from "@material-ui/core";
 import HamburgerIcon from "assets/icons/hamburger.svg";
 import SearchIcon from "assets/icons/search.svg";
-import PlumeLogo from "assets/plume-logo.svg";
+import { LiveHelpOutlined as LiveHelpOutlinedIcon } from "@material-ui/icons";
+import DrawerContent from "components/DrawerContent";
 
 type Props = {
   children?: ReactNode;
@@ -22,7 +26,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(2),
     },
     navBar: {
-      background: theme.palette.common.plumeBrown,
+      background: theme.palette.common.stayrOrange,
+      [theme.breakpoints.up("md")]: {
+        display: "none",
+      },
     },
     navContainer: {
       justifyContent: "space-between",
@@ -30,12 +37,30 @@ const useStyles = makeStyles((theme: Theme) =>
     inputContainer: {
       background: "#fff",
       "& svg": {
-        fill: theme.palette.common.plumeBrown,
+        fill: theme.palette.common.stayrOrange,
       },
     },
     searchField: {
       background: "#fff",
       width: "100%",
+    },
+    contentContainer: {
+      display: "flex",
+      "& main": {
+        width: "100%",
+        overflowY: "auto",
+      },
+    },
+
+    drawerPaper: {
+      width: "20rem",
+      backgroundColor: theme.palette.common.stayrOrange,
+      color: "#f8f5ef",
+      height: "100vh",
+      position: "relative",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
     },
   })
 );
@@ -47,9 +72,12 @@ const useStyles = makeStyles((theme: Theme) =>
 const Layout = ({ children }: Props) => {
   const classes = useStyles();
   const [isSearch, setIsSearch] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
-    <div>
+    <Box>
       <AppBar position="static" className={classes.navBar}>
         {isSearch ? (
           <Toolbar className={classes.inputContainer}>
@@ -63,10 +91,11 @@ const Layout = ({ children }: Props) => {
               className={classes.menuButton}
               color="inherit"
               aria-label="menu"
+              onClick={handleDrawerToggle}
             >
               <HamburgerIcon />
             </IconButton>
-            <PlumeLogo />
+            <LiveHelpOutlinedIcon />
             <IconButton
               edge="end"
               color="inherit"
@@ -78,8 +107,39 @@ const Layout = ({ children }: Props) => {
           </Toolbar>
         )}
       </AppBar>
-      {children}
-    </div>
+
+      <Hidden mdUp>
+        <Drawer
+          variant="temporary"
+          anchor="left"
+          open={mobileOpen}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true,
+          }}
+        >
+          <DrawerContent />
+        </Drawer>
+      </Hidden>
+
+      <Box className={classes.contentContainer}>
+        <Hidden smDown>
+          <Drawer
+            variant="permanent"
+            open
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+          >
+            <DrawerContent />
+          </Drawer>
+        </Hidden>
+        <main>{children}</main>
+      </Box>
+    </Box>
   );
 };
 

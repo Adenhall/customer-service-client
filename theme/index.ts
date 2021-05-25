@@ -4,7 +4,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 export default createMuiTheme({
   palette: {
     common: {
-      plumeBrown: "#836554",
+      stayrOrange: "#fe6962",
     },
   },
 });
